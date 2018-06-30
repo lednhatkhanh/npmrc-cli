@@ -9,17 +9,5 @@
             }
         ],
         "@babel/preset-typescript"
-    ],
-    "plugins": [
-        [
-            "module-resolver",
-            {
-                "root": ["./"],
-                "extensions": [".ts"],
-                "alias": {
-                    "~": "./src"
-                }
-            }
-        ]
     ]
 }
