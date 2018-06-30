@@ -63,5 +63,6 @@
     },
     "lint-staged": {
         "*.ts": ["npm run lint", "git add"]
-    }
+    },
+    "files": ["lib", "package.json", "README.md"]
 }
