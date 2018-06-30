@@ -1,22 +1,21 @@
 #!/usr/bin/env node
 
-import os from "os";
 import fs from "fs";
-import path from "path";
 import childProcess from "child_process";
 
-// import * as inquirer from "inquirer";
 import program from "commander";
 import chalk from "chalk";
 
-const HOME_DIR = os.homedir();
-const NPMRC_NAME = ".npmrc";
-const NPMRC_PATH = path.join(HOME_DIR, NPMRC_NAME);
-const EDITOR = "vim";
+import { NPMRC_PATH, HOME_DIR, getFilePath, checkFileExists, checkActiveFileExists } from "./utils";
+
+program.version("1.0.0", "-v, --version");
 
 program
-    .version("1.0.0", "-v, --version")
-    .option("create <name>", "Create a new .npmrc file", (name: string) => {
+    .command("create")
+    .alias("c")
+    .arguments("<name>")
+    .description("Create a new .npmrc file")
+    .action((name: string) => {
         const filePath = getFilePath(name);
 
         if (checkFileExists(filePath)) {
@@ -26,19 +25,14 @@ program
 
         fs.writeFileSync(filePath, "");
         console.log(chalk.blue(`.npmrc.${name} has been created.`));
-    })
-    .option("remove <name>", "Remove a .npmrc file", (name: string) => {
-        const filePath = getFilePath(name);
+    });
 
-        if (!checkFileExists(filePath)) {
-            console.log(chalk.red(`.npmrc.${name} does not exist.`));
-            return;
-        }
-
-        fs.unlinkSync(filePath);
-        console.log(chalk.blue(`.npmrc.${name} has been removed.`));
-    })
-    .option("use <name>", "Use a created .npmrc file.", (name: string) => {
+program
+    .command("use")
+    .alias("u")
+    .arguments("<name>")
+    .description("Use a created .npmrc file.")
+    .action((name: string) => {
         const filePath = getFilePath(name);
 
         if (!checkFileExists(filePath)) {
@@ -53,8 +47,15 @@ program
 
         fs.copyFileSync(filePath, NPMRC_PATH);
         console.log(chalk.blue(`.npmrc.${name} has been renamed to .npmrc.`));
-    })
-    .option("open <name>", "Edit a file.", (name: string) => {
+    });
+
+program
+    .command("open")
+    .alias("o")
+    .arguments("<name>")
+    .description("Edit a file.")
+    .option("--editor [editorName]", "Editor to open the file.", "vim")
+    .action((name: string, cmd: { editor: string }) => {
         const filePath = getFilePath(name);
 
         if (!checkFileExists(filePath)) {
@@ -62,31 +63,58 @@ program
             return;
         }
 
-        const child = childProcess.spawn(EDITOR, [filePath], {
+        const child = childProcess.spawn(cmd.editor, [filePath], {
             stdio: "inherit",
         });
 
         child.on("exit", () => {
             console.log(chalk.blue("Process has been ended."));
         });
-    })
-    .option("open-main", "Edit .npmrc file.", () => {
+    });
+
+program
+    .command("open-main")
+    .alias("om")
+    .description("Edit .npmrc file.")
+    .option("--editor [editorName]", "Editor to open the file.", "vim")
+    .action((cmd: { editor: string }) => {
         if (!checkActiveFileExists()) {
             console.log(chalk.red(`.npmrc does not exist.`));
             return;
         }
 
-        const child = childProcess.spawn(EDITOR, [NPMRC_PATH], {
+        const child = childProcess.spawn(cmd.editor, [NPMRC_PATH], {
             stdio: "inherit",
         });
 
         child.on("exit", () => {
             console.log(chalk.blue("Process has been ended."));
         });
-    })
-    .option("list", "Get a list of all created .npmrc files.", () => {
-        const doesMainFileExist = fs.existsSync(NPMRC_PATH);
+    });
 
+program
+    .command("remove")
+    .alias("rm")
+    .arguments("<name>")
+    .description("Remove a .npmrc file")
+    .action((name: string) => {
+        const filePath = getFilePath(name);
+
+        if (!checkFileExists(filePath)) {
+            console.log(chalk.red(`.npmrc.${name} does not exist.`));
+            return;
+        }
+
+        fs.unlinkSync(filePath);
+        console.log(chalk.blue(`.npmrc.${name} has been removed.`));
+    });
+
+program
+    .command("list")
+    .alias("ls")
+    .description("List all created files.")
+    .action(() => {
+        const doesMainFileExist = fs.existsSync(NPMRC_PATH);
         if (doesMainFileExist) {
             console.log(`There is a active .npmrc file.`);
         }
@@ -101,17 +129,6 @@ program
                 console.log(chalk.white(fileName));
             }
         });
-    })
-    .parse(process.argv);
+    });
 
-function getFilePath(name: string): string {
-    return `${NPMRC_PATH}.${name}`;
-}
-
-function checkFileExists(filePath: string): boolean {
-    return fs.existsSync(filePath);
-}
-
-function checkActiveFileExists(): boolean {
-    return fs.existsSync(NPMRC_PATH);
-}
+program.parse(process.argv);
