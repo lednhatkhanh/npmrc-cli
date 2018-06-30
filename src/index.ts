@@ -63,12 +63,8 @@ program
             return;
         }
 
-        const child = childProcess.spawn(cmd.editor, [filePath], {
+        childProcess.spawn(cmd.editor, [filePath], {
             stdio: "inherit",
-        });
-
-        child.on("exit", () => {
-            console.log(chalk.blue("Process has been ended."));
         });
     });
 
@@ -93,10 +89,24 @@ program
     });
 
 program
+    .command("clear")
+    .alias("cl")
+    .description("Remove the currently active .npmrc file.")
+    .action(() => {
+        if (!checkActiveFileExists()) {
+            console.log(chalk.red(`.npmrc does not exist.`));
+            return;
+        }
+
+        fs.unlinkSync(NPMRC_PATH);
+        console.log(chalk.blue(`.npmrc has been removed.`));
+    });
+
+program
     .command("remove")
     .alias("rm")
     .arguments("<name>")
-    .description("Remove a .npmrc file")
+    .description("Remove a file")
     .action((name: string) => {
         const filePath = getFilePath(name);
 
