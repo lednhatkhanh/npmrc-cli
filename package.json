@@ -59,19 +59,9 @@
             "useBabelrc": true,
             "enableTsDiagnostics": true
         },
-        "moduleFileExtensions": [
-            "ts",
-            "tsx",
-            "js",
-            "jsx",
-            "json",
-            "node"
-        ]
+        "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
     },
     "lint-staged": {
-        "*.ts": [
-            "npm run lint",
-            "git add"
-        ]
+        "*.ts": ["npm run lint", "git add"]
     }
 }
