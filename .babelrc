@@ -1,0 +1,25 @@
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "targets": {
+                    "node": "6.14.3"
+                }
+            }
+        ],
+        "@babel/preset-typescript"
+    ],
+    "plugins": [
+        [
+            "module-resolver",
+            {
+                "root": ["./"],
+                "extensions": [".ts"],
+                "alias": {
+                    "~": "./src"
+                }
+            }
+        ]
+    ]
+}
