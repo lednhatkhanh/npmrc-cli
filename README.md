@@ -2,6 +2,10 @@
 
 This is a simple cli tool that helps you manage multiple .npmrc files.
 
+## Required
+
+-   NodeJS >= 8
+
 ## Introduction
 
 -   Run `npmrc-cli --help` in the terminal to learn more about all commands.
