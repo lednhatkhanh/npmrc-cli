@@ -72,7 +72,7 @@ program
     .command("open-main")
     .alias("om")
     .description("Edit .npmrc file.")
-    .option("--editor [editorName]", "Editor to open the file.", "vim")
+    .option("--editor [name]", "Editor to open the file.", "vim")
     .action((cmd: { editor: string }) => {
         if (!checkActiveFileExists()) {
             console.log(chalk.red(`.npmrc does not exist.`));

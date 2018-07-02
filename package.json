@@ -7,9 +7,9 @@
         "dev": "nodemon",
         "build": "npm run clean && babel src --out-dir lib --extensions '.ts'",
         "lint": "tslint -c tslint.json -p tsconfig.json ./src/**/*.ts",
+        "link": "npm link",
         "clean": "rimraf lib",
-        "precommit": "lint-staged",
-        "postbuild": "npm link"
+        "precommit": "lint-staged"
     },
     "repository": {
         "type": "git",
@@ -59,10 +59,25 @@
             "useBabelrc": true,
             "enableTsDiagnostics": true
         },
-        "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "json",
+            "node"
+        ]
     },
     "lint-staged": {
-        "*.ts": ["npm run lint", "git add"]
+        "*.ts": [
+            "npm run lint",
+            "git add"
+        ]
     },
-    "files": ["lib", "package.json", "README.md"]
+    "files": [
+        "lib",
+        "package.json",
+        "README.md",
+        "LICENSE"
+    ]
 }
