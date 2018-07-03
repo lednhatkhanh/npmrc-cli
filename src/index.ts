@@ -6,9 +6,9 @@ import childProcess from "child_process";
 import program from "commander";
 import chalk from "chalk";
 
-import { NPMRC_PATH, HOME_DIR, getFilePath, checkFileExists, checkActiveFileExists } from "./utils";
+import { NPMRC_PATH, HOME_DIR, getFilePath } from "./utils";
 
-program.version("1.0.2", "-v, --version");
+program.version(process.env.npm_package_version as string, "-v, --version");
 
 program
     .command("create")
@@ -18,7 +18,7 @@ program
     .action((name: string) => {
         const filePath = getFilePath(name);
 
-        if (checkFileExists(filePath)) {
+        if (fs.existsSync(filePath)) {
             console.log(chalk.red(`.npmrc.${name} exists, please choose another name or remove this file first.`));
             return;
         }
@@ -35,12 +35,12 @@ program
     .action((name: string) => {
         const filePath = getFilePath(name);
 
-        if (!checkFileExists(filePath)) {
+        if (!fs.existsSync(filePath)) {
             console.log(chalk.red(`.npmrc.${name} does not exist.`));
             return;
         }
 
-        if (checkActiveFileExists()) {
+        if (fs.existsSync(NPMRC_PATH)) {
             fs.unlinkSync(NPMRC_PATH);
             console.log(chalk.blue(`.npmrc has been removed.`));
         }
@@ -52,39 +52,19 @@ program
 program
     .command("open")
     .alias("o")
-    .arguments("<name>")
-    .description("Edit a file.")
-    .option("--editor [editorName]", "Editor to open the file.", "vim")
-    .action((name: string, cmd: { editor: string }) => {
-        const filePath = getFilePath(name);
+    .arguments("[name]")
+    .description("Edit a file. Leave [name] empty to open .npmrc")
+    .option("-e [editorName]", "Editor to open the file.", "vim")
+    .action((name: string | undefined, cmd: { E: string }) => {
+        const filePath = name ? getFilePath(name) : NPMRC_PATH;
 
-        if (!checkFileExists(filePath)) {
-            console.log(chalk.red(`.npmrc.${name} does not exist.`));
+        if (!fs.existsSync(filePath)) {
+            console.log(chalk.red(name ? `.npmrc.${name} does not exist.` : `.npmrc does not exist.`));
             return;
         }
 
-        childProcess.spawn(cmd.editor, [filePath], {
+        childProcess.spawn(cmd.E, [filePath], {
             stdio: "inherit",
-        });
-    });
-
-program
-    .command("open-main")
-    .alias("om")
-    .description("Edit .npmrc file.")
-    .option("--editor [name]", "Editor to open the file.", "vim")
-    .action((cmd: { editor: string }) => {
-        if (!checkActiveFileExists()) {
-            console.log(chalk.red(`.npmrc does not exist.`));
-            return;
-        }
-
-        const child = childProcess.spawn(cmd.editor, [NPMRC_PATH], {
-            stdio: "inherit",
-        });
-
-        child.on("exit", () => {
-            console.log(chalk.blue("Process has been ended."));
         });
     });
 
@@ -93,7 +73,7 @@ program
     .alias("cl")
     .description("Remove the currently active .npmrc file.")
     .action(() => {
-        if (!checkActiveFileExists()) {
+        if (!fs.existsSync(NPMRC_PATH)) {
             console.log(chalk.red(`.npmrc does not exist.`));
             return;
         }
@@ -110,7 +90,7 @@ program
     .action((name: string) => {
         const filePath = getFilePath(name);
 
-        if (!checkFileExists(filePath)) {
+        if (!fs.existsSync(filePath)) {
             console.log(chalk.red(`.npmrc.${name} does not exist.`));
             return;
         }
