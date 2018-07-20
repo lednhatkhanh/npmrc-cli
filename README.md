@@ -12,6 +12,10 @@ This is a simple cli tool that helps you manage multiple .npmrc files.
 
 ## Changelog
 
+### 2.1.1
+
+-   Fix an error with `copy` command.
+
 ### 2.1.0
 
 -   Update dependencies.

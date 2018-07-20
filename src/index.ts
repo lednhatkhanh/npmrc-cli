@@ -128,15 +128,18 @@ program
     .arguments("[name]")
     .description("Copy content of a file. Leave [name] empty to open .npmrc")
     .action((name: string | undefined) => {
-        if (!name) {
-            const doesMainFileExist = fs.existsSync(NPMRC_PATH);
-            if (!doesMainFileExist) {
-                console.log(chalk.red(`.npmrc does not exist.`));
-            }
+        let filePath = "";
+        filePath = name ? getFilePath(name) : NPMRC_PATH;
 
-            const buffer = fs.readFileSync(NPMRC_PATH);
-            clipboardy.writeSync(buffer.toString());
+        if (!fs.existsSync(filePath)) {
+            console.log(chalk.red(`File .npmrc${name ? `.${name}` : ""} does not exist!`));
+            return;
         }
+
+        const buffer = fs.readFileSync(filePath);
+        clipboardy.writeSync(buffer.toString());
+
+        console.log(chalk.blue(`Copied content of .npmrc${name ? `.${name}` : ""} to clipboard.`));
     });
 
 program.parse(process.argv);
