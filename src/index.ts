@@ -5,6 +5,7 @@ import childProcess from "child_process";
 
 import program from "commander";
 import chalk from "chalk";
+import clipboardy from "clipboardy";
 
 import { NPMRC_PATH, HOME_DIR, getFilePath } from "./utils";
 
@@ -119,6 +120,23 @@ program
                 console.log(chalk.white(fileName));
             }
         });
+    });
+
+program
+    .command("copy")
+    .alias("cp")
+    .arguments("[name]")
+    .description("Copy content of a file. Leave [name] empty to open .npmrc")
+    .action((name: string | undefined) => {
+        if (!name) {
+            const doesMainFileExist = fs.existsSync(NPMRC_PATH);
+            if (!doesMainFileExist) {
+                console.log(chalk.red(`.npmrc does not exist.`));
+            }
+
+            const buffer = fs.readFileSync(NPMRC_PATH);
+            clipboardy.writeSync(buffer.toString());
+        }
     });
 
 program.parse(process.argv);

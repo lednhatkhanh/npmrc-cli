@@ -10,6 +10,13 @@ This is a simple cli tool that helps you manage multiple .npmrc files.
 
 -   Run `npmrc-cli --help` in the terminal to learn more about all commands.
 
+## Changelog
+
+### 2.1.0
+
+-   Update dependencies.
+-   Add `copy` command.
+
 ## Development
 
 -   Clone this repository.
