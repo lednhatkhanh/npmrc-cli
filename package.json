@@ -1,0 +1,55 @@
+{
+  "name": "npmrc-cli",
+  "version": "0.0.1",
+  "description": "npmrc-cli CLI",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lednhatkhanh/npmrc-cli.git"
+  },
+  "author": "Nhat Khanh <lednhatkhanh@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/lednhatkhanh/npmrc-cli/issues"
+  },
+  "homepage": "https://github.com/lednhatkhanh/npmrc-cli#readme",
+  "bin": {
+    "npmrc-cli": "bin/npmrc-cli"
+  },
+  "scripts": {
+    "format": "prettier --write **/*.{js,json} && standard --fix",
+    "lint": "standard",
+    "test": "jest",
+    "watch": "jest --watch --runInBand",
+    "snapupdate": "jest --updateSnapshot",
+    "coverage": "jest --coverage"
+  },
+  "files": [
+    "LICENSE",
+    "readme.md",
+    "docs",
+    "bin",
+    "src"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "gluegun": "next"
+  },
+  "devDependencies": {
+    "standard": "^12.0.1",
+    "prettier": "^1.12.1",
+    "jest": "^23.6.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "semi": true,
+    "singleQuote": true
+  }
+}
