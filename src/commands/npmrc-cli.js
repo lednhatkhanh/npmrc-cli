@@ -4,7 +4,7 @@ module.exports = {
     const { print } = toolbox;
 
     print.info(
-      'npmrc-cli is a small tool to help you manage multiple .npmrc profiles.',
+      'npmrc-cli is a small tool to help you manage multiple .npmrc files.',
     );
   },
 };

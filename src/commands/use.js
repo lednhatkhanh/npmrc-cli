@@ -1,11 +1,10 @@
 const {
-  ROOT_DIR,
-  PROFILE_NAME_REGEX,
   CONFIG_FILE,
   getProfileFile,
   NPMRC_FILE,
   ACTIVE_PROFILE_CONFIG,
 } = require('../config');
+const { ensureRootDirExists, ensureValidProfileName } = require('../utils');
 
 module.exports = {
   name: 'use',
@@ -17,19 +16,16 @@ module.exports = {
       parameters: { string },
       patching: { update },
     } = toolbox;
+    let errorMessage;
 
-    if (!exists(ROOT_DIR)) {
-      return error(`${ROOT_DIR} doesn't exist, run 'npmrc-cli init' first.`);
+    errorMessage = ensureRootDirExists();
+    if (errorMessage) {
+      return error(errorMessage);
     }
 
-    if (!string) {
-      return error('Profile name cannot be empty.');
-    }
-
-    if (!PROFILE_NAME_REGEX.test(string)) {
-      return error(
-        'Profile name should contain only lowercase letters and use dashes to separate words.',
-      );
+    errorMessage = ensureValidProfileName(string);
+    if (errorMessage) {
+      return error(errorMessage);
     }
 
     const PROFILE_FILE = getProfileFile(string);

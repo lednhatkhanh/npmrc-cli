@@ -22,6 +22,13 @@ test('outputs help', async () => {
   expect(output).toContain('0.0.1');
 });
 
+test('output welcome message', async () => {
+  const output = await cli('');
+  expect(output).toContain(
+    'npmrc-cli is a small tool to help you manage multiple .npmrc files.',
+  );
+});
+
 afterEach(() => {
   filesystem.remove(ROOT_DIR);
   filesystem.remove(NPMRC_FILE);
