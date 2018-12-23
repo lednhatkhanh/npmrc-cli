@@ -6,7 +6,7 @@ module.exports = {
   run: async toolbox => {
     const {
       print: { error, success },
-      filesystem: { exists, dir, file },
+      filesystem: { exists, dir, file, write },
     } = toolbox;
 
     if (exists(ROOT_DIR)) {
@@ -15,6 +15,7 @@ module.exports = {
 
     dir(ROOT_DIR);
     file(CONFIG_FILE);
+    write(CONFIG_FILE, '{}');
 
     success(`${ROOT_DIR} created.`);
   },

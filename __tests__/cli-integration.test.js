@@ -1,6 +1,11 @@
 const { system, filesystem } = require('gluegun');
 const { resolve } = require('path');
-const { CONFIG_FILE, ROOT_DIR } = require('../src/config');
+const {
+  CONFIG_FILE,
+  ROOT_DIR,
+  NPMRC_FILE,
+  ACTIVE_PROFILE_CONFIG,
+} = require('../src/config');
 
 const src = resolve(__dirname, '..');
 
@@ -19,6 +24,7 @@ test('outputs help', async () => {
 
 afterEach(() => {
   filesystem.remove(ROOT_DIR);
+  filesystem.remove(NPMRC_FILE);
 });
 
 describe('init', () => {
@@ -80,13 +86,69 @@ describe('new', () => {
 
   test('should create correct file with passed profile name', async () => {
     filesystem.dir(ROOT_DIR);
-    filesystem.file(CONFIG_FILE);
 
     const output = await cli(`new ${profileName}`);
 
     expect(filesystem.exists(profileFile)).toBe('file');
-    expect(filesystem.read(CONFIG_FILE)).toBe(`ACTIVE_PROFILE=${profileName}`);
 
     expect(output).toContain(`${profileFile} created.`);
+  });
+});
+
+describe('use', () => {
+  const profileName = 'test';
+  const profileFile = `${ROOT_DIR}${filesystem.separator}.npmrc.${profileName}`;
+
+  test("should throw error when ~/.npmrc-cli doesn't exist", async () => {
+    const output = await cli(`use ${profileName}`);
+
+    expect(output).toContain(
+      `${ROOT_DIR} doesn't exist, run 'npmrc-cli init' first.`,
+    );
+  });
+
+  test('should throw error when profile name is empty', async () => {
+    filesystem.dir(ROOT_DIR);
+
+    const output = await cli(`use`);
+
+    expect(output).toContain('Profile name cannot be empty.');
+  });
+
+  test('should throw error when profile name is invalid', async () => {
+    filesystem.dir(ROOT_DIR);
+
+    const output = await cli(`use WRONG_NAME`);
+
+    expect(output).toContain(
+      'Profile name should contain only lowercase letters and use dashes to separate words.',
+    );
+  });
+
+  test("should throw error when file doesn't exist", async () => {
+    filesystem.dir(ROOT_DIR);
+
+    const output = await cli(`use ${profileName}`);
+
+    expect(output).toContain(`${profileFile} doesn't exist.`);
+  });
+
+  test('should active profile', async () => {
+    filesystem.dir(ROOT_DIR);
+    filesystem.file(profileFile);
+
+    const data = 'KEY=FAKE_KEY_HERE';
+    filesystem.write(profileFile, data);
+
+    const output = await cli(`use ${profileName}`);
+
+    expect(output).toContain(
+      `Symlink created: ${profileFile} -> ${NPMRC_FILE}.`,
+    );
+    expect(filesystem.exists(NPMRC_FILE)).toBe('file');
+    expect(filesystem.read(NPMRC_FILE)).toBe(data);
+    expect(filesystem.read(CONFIG_FILE)).toContain(
+      `"${ACTIVE_PROFILE_CONFIG}": "${profileName}"`,
+    );
   });
 });

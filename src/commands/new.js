@@ -1,9 +1,4 @@
-const {
-  ROOT_DIR,
-  CONFIG_FILE,
-  PROFILE_NAME_REGEX,
-  getProfileFile,
-} = require('../config');
+const { ROOT_DIR, PROFILE_NAME_REGEX, getProfileFile } = require('../config');
 
 module.exports = {
   name: 'new',
@@ -11,7 +6,7 @@ module.exports = {
   run: async toolbox => {
     const {
       print: { error, success },
-      filesystem: { exists, file, write },
+      filesystem: { exists, file },
       parameters: { string },
     } = toolbox;
 
@@ -35,7 +30,6 @@ module.exports = {
     }
 
     file(PROFILE_FILE);
-    write(CONFIG_FILE, `ACTIVE_PROFILE=${string}`);
 
     success(`${PROFILE_FILE} created.`);
   },
